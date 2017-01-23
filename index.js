@@ -77,7 +77,12 @@ module.exports = function getPlugin(S) {
             }
 
             // Run the node REPL process here
-            return repl.start({ terminal: true, useColors: true, prompt: `sls [${region}][${stage}]> ` });
+            return repl.start({
+              terminal: true,
+              useColors: true,
+              replMode: repl.REPL_MODE_MAGIC,
+              prompt: `sls [${region}][${stage}]> `
+            });
           })
           .then(server => {
             try {
