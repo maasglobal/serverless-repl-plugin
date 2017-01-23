@@ -1,8 +1,11 @@
 'use strict';
 
 const Promise = require('bluebird');
-const repl = require('repl');
+const fs = require('fs');
 const os = require('os');
+const repl = require('repl');
+
+const HISTORY_FILE_NAME = '.node_repl_history';
 
 
 module.exports = function getPlugin(S) {
@@ -59,14 +62,14 @@ module.exports = function getPlugin(S) {
         return _this._validate()
           .bind(_this)
           .then(() => {
-              const project = S.getProject();
-              const func = project.getFunction(funcName);
+            const project = S.getProject();
+            const func = project.getFunction(funcName);
 
-              return func
-                .getRuntime()
-                .getEnvVars(func, stage, region);
+            return func
+              .getRuntime()
+              .getEnvVars(func, stage, region);
           })
-          .then(function (envVars) {
+          .then(envVars => {
 
             // Add ENV vars (from no stage/region) to environment
             for (var key in envVars) {
@@ -74,9 +77,24 @@ module.exports = function getPlugin(S) {
             }
 
             // Run the node REPL process here
-            return repl.start({ prompt: `sls [${region}][${stage}]> ` });
+            return repl.start({ terminal: true, useColors: true, prompt: `sls [${region}][${stage}]> ` });
           })
-          .then(() => {
+          .then(server => {
+            try {
+              // load command history from a file in the current directory
+              fs.readFileSync(HISTORY_FILE_NAME, { encoding: 'utf-8' })
+                .split('\n')
+                .reverse()
+                .filter(line => line.trim())
+                .map(line => server.history.push(line));
+            }
+            catch(err) { /* swallow */ }
+
+            // On exit, save the history
+            server.on('exit', function() {
+              fs.appendFileSync(HISTORY_FILE_NAME, server.lines.filter(s => s !== '').join('\n') + '\n');
+            });
+
             return resolve(evt);
           });
       });
