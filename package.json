@@ -1,0 +1,22 @@
+{
+  "name": "serverless-repl-plugin",
+  "version": "1.2.0",
+  "description": "Serverless REPL Plugin - Drop into a node REPL with your full serverless environment",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serverless",
+    "repl",
+    "plugin"
+  ],
+  "author": "Konrad Markus <konker@iki.fi>",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.7"
+  }
+}
