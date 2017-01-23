@@ -47,6 +47,10 @@ module.exports = function getPlugin(S) {
       this.evt = evt;
       let _this = this;
 
+      const stage = _this.evt.options.stage;
+      const region = _this.evt.options.region;
+      const funcName = _this.evt.options.function;
+
       return new Promise(function (resolve, reject) {
         // console.log(evt)           // Contains Action Specific data
         // console.log(_this.S)       // Contains Project Specific data
@@ -55,10 +59,6 @@ module.exports = function getPlugin(S) {
         return _this._validate()
           .bind(_this)
           .then(() => {
-              const funcName = _this.evt.options.function;
-              const stage = _this.evt.options.stage;
-              const region = _this.evt.options.region;
-
               const project = S.getProject();
               const func = project.getFunction(funcName);
 
@@ -74,7 +74,7 @@ module.exports = function getPlugin(S) {
             }
 
             // Run the node REPL process here
-            return repl.start({ prompt: 'sls> ' });
+            return repl.start({ prompt: `sls [${region}][${stage}]> ` });
           })
           .then(() => {
             return resolve(evt);
